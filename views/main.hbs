@@ -1,0 +1,84 @@
+<h1>Feed the beast</h1>
+
+<img id="silas">
+<script>
+    var n = Math.floor(Math.random() * 6) + 1;
+
+    var elem = document.getElementById("silas");
+    elem.src = "img/silas_pics/" + n.toString() + ".jpg";
+</script>
+
+<br> 
+<form action="/feed" method="post" form="form2">
+    <select name="user">
+        {{#each users}}
+            <option value="{{this.id}}">{{this.name}}</option>
+        {{/each}}
+    </select>
+    <input type="submit" value="Add Entry">
+</form>
+
+<br>
+{{#if feedings}}
+    <h1 id="since">Since last feeding:<br>xd</h1>
+    <script>
+        let add_zero = function(s) {
+            if (typeof s !== typeof "") {
+                s = s.toString();
+            }
+            if (s.length < 2) {
+                s = "0" + s;
+            }
+            return s;
+        };
+
+        let st = "{{feedings.0.time}}".split(':');
+        let lastFeeding = new Date(Date.now());
+        lastFeeding.setHours(st[0]);
+        lastFeeding.setMinutes(st[1]);
+        lastFeeding.setSeconds(st[2]);
+
+        let time_left = document.getElementById("since");
+        
+        function perSecond() {
+            let diff = Date.now() - lastFeeding;
+            time_left.innerHTML = "Since last feeding:<br>" +
+                add_zero(Math.floor(diff/1000/60/60)) + ":" + // to hours
+                add_zero(Math.floor(diff/1000/60%60)) + ":" + // to minutes
+                add_zero(Math.floor(diff/1000%60));           // to seconds*/
+        }
+        perSecond();
+        window.setInterval(perSecond, 1000);
+    </script>
+
+
+    <h3>{{date}}</h3>
+    <h2>Today's feedings ({{feedings.length}}):</h2>
+    <table>
+        <colgroup>
+            <col style="width:30%">
+            <col style="width:70%">
+        </colgroup>
+        <tr>
+            <td class="col odd">when</td>
+            <td class="col odd">who</td>
+        </tr>
+        {{#each feedings}}
+            <tr {{#unless (even @index)}} 
+                    class="odd"
+                {{/unless}}>
+                <td>{{this.time}}</td>
+                   <td>
+                    {{#if this.anon}}
+                        <i>anonymous</i>
+                    {{else}}
+                        {{this.who}}
+                    {{/if}}
+                </td>
+            </tr>
+        {{/each}}
+    </table>
+{{else}}
+    <i>It seems that the beast has not been feeded today... yet.</i>
+{{/if}}
+<br>
