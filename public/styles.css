@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Gothic+A1&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Merriweather&display=swap');
 
 body {
     /* background-color: #4b4b4b;*/
     background-image: url("img/fur.jpg");
-    font-family: 'Gothic A1', sans-serif;
+    font-family: 'Merriweather', sans-serif;
 }
 
 small {
