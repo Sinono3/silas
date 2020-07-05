@@ -24,12 +24,7 @@ async function open_db() {
 
 async function get_feedings_for_today(db: Database) {
     let users = await db.all("SELECT id, name FROM users");
-    let feedings = await db.all("SELECT * FROM feedings WHERE date(datetime(time / 1000, 'unixepoch')) = date('now')");
-
-    /*feedings.push({
-        who: null,
-        time: Date.now()
-    });*/
+    let feedings = await db.all("SELECT * FROM feedings WHERE date(datetime(time / 1000, 'unixepoch')) = date(datetime('now', 'localtime'))");
 
     feedings.sort((a, b) => a.time - b.time);
     feedings.reverse();
