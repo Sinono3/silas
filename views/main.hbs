@@ -1,3 +1,21 @@
+<script>
+	const today = construct_date("{{date}}");
+	function construct_date(s) {
+		let st = s.split('/');
+		return new Date(
+			parseInt(st[0]), 
+			parseInt(st[1])-1, 
+			parseInt(st[2])
+		);
+	}
+	function get_date_string(date, plusDays) {
+		const n = new Date(date);
+		n.setDate(date.getDate() + plusDays)
+		
+    	return `${n.getFullYear()}/${n.getMonth()+1}/${n.getDate()}`
+	}
+</script>
+
 <div class="jumbotron text-center page-header">
   <h1>Feed the beast</h1>
 </div>
@@ -5,7 +23,7 @@
 	<div class="col-sm-4">
 		<img id="silas" class="img-responsive img-rounded">
 		<br/>
-		{{#if feedings}}
+		{{#if today}}
 			<div class="panel panel-default">
 				<div class="panel-heading">Since last feeding:</div>
 				<div class="panel-body" id="since">Panel Content</div>
@@ -23,6 +41,15 @@
 		</form>
 	</div>
 	<div class="col-sm-8">
+		<h2>
+			<a type="button" class="btn btn-secondary" id="previous-date">⮜</a>
+			{{#if today}}
+				Today's feedings ({{date}}):
+			{{else}}
+				Feedings of {{date}}:
+			{{/if}}
+			<a type="button" class="btn btn-secondary" id="next-date">⮞</a>
+		</h2>
 		{{#if feedings}}
 			<script>
 				let add_zero = function(s) {
@@ -53,7 +80,6 @@
 				perSecond();
 				window.setInterval(perSecond, 1000);
 			</script>
-			<h2>Today's feedings ({{date}}):</h2>
 			<span class="border border-dark">
 				<table class="table table-hover">
 					<thead class="thead-dark">
@@ -79,7 +105,13 @@
 				</table>
 			</span>
 		{{else}}
-			<i>It seems that the beast has not been fed today... yet.</i>
+			<i>
+				{{#if today}}
+					It seems that the beast has not been fed today... yet.
+				{{else}}
+					There are no entries for this date... the beast must have been very hungry.
+				{{/if}}
+			</i>
 		{{/if}}
 		<br>
 	</div>
@@ -89,4 +121,8 @@
 
     var elem = document.getElementById("silas");
     elem.src = "/img/silas_pics/" + n.toString() + ".jpg";
+
+	console.log(get_date_string(construct_date("{{date}}"), 1))
+	document.getElementById("previous-date").href = "/" + get_date_string(today, -1);
+	document.getElementById("next-date").href = "/" + get_date_string(today, 1);
 </script>

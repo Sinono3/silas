@@ -11,3 +11,7 @@ body {
     background-color: #d1d1d1;
     padding: 4vw;
 }
+.fill {
+    min-height: 100vh;
+    height: 100%;
+}
