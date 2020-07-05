@@ -24,10 +24,12 @@
 		<img id="silas" class="img-responsive img-rounded">
 		<br/>
 		{{#if today}}
-			<div class="panel panel-default">
-				<div class="panel-heading">Since last feeding:</div>
-				<div class="panel-body" id="since">Panel Content</div>
-			</div>
+			{{#if feedings}}
+				<div class="panel panel-default">
+					<div class="panel-heading">Since last feeding:</div>
+					<div class="panel-body" id="since"></div>
+				</div>
+			{{/if}}
 		{{/if}}
 		<form action="/feed" method="post" class="form-inline">
 			<div class="form-group">
@@ -42,13 +44,13 @@
 	</div>
 	<div class="col-sm-8">
 		<h2>
-			<a type="button" class="btn btn-secondary" id="previous-date">⮜</a>
+			<a type="button" class="btn btn-secondary date-btn" id="previous-date">⮜</a>
 			{{#if today}}
 				Today's feedings ({{date}}):
 			{{else}}
 				Feedings of {{date}}:
 			{{/if}}
-			<a type="button" class="btn btn-secondary" id="next-date">⮞</a>
+			<a type="button" class="btn btn-secondary date-btn" id="next-date">⮞</a>
 		</h2>
 		{{#if feedings}}
 			<script>
@@ -61,7 +63,7 @@
 					}
 					return s;
 				};
-
+				
 				let st = "{{feedings.0.time}}".split(':');
 				let lastFeeding = new Date(Date.now());
 				lastFeeding.setHours(st[0]);
