@@ -60,9 +60,12 @@ async function get_users(db: Database) {
     return await db.all("SELECT id, name FROM users");
 }
 // user ID as input
-async function add_feeding_entry(db: Database, user: number) {
+async function add_entry(db: Database, user: number, date: Date) {
     console.log("Added entry by user" + user + ".");
-    db.run('INSERT INTO feedings (who, time) VALUES (?, ?)', user, Date.now())
+    db.run('INSERT INTO feedings (who, time) VALUES (?, ?)', user, date.getTime())
+}
+async function add_entry_now(db: Database, user: number) {
+    add_entry(db, user, new Date(Date.now()));
 }
 async function remove_entry(db: Database, id: number) {
     console.log("Deleted entry", id);
@@ -98,15 +101,27 @@ app.get('/', async function (req, res) {
 app.get('/delete/:id', async function (req, res) {
     remove_entry(await open_db(), parseInt(req.params.id));
 
-    res.redirect("/");
+    res.redirect('back');
+});
+app.post('/add/:year/:month/:date', async function (req, res) {
+    const date = construct_date(req.params.year, req.params.month, req.params.date);
+    const times = req.body.time.split(":").map((x: string) => parseInt(x));
+
+    date.setHours(times[0]);
+    date.setMinutes(times[1]);
+
+    if (!isNaN(date.getTime()))
+        await add_entry(await open_db(), parseInt(req.body.user), date);
+    else
+        console.warn("Invalid time");
+
+    res.redirect('back');
 });
 
 app.post('/feed', async function (req, res) {
-    console.log("Request to add entry received!", req.body);
+    await add_entry_now(await open_db(), parseInt(req.body.user));
 
-    await add_feeding_entry(await open_db(), parseInt(req.body.user));
-
-    res.redirect("/");
+    res.redirect('/');
 });
 
 app.listen(3000, function () {

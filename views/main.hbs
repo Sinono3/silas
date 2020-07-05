@@ -3,26 +3,26 @@
 	function construct_date(s) {
 		let st = s.split('/');
 		return new Date(
-			parseInt(st[0]), 
-			parseInt(st[1])-1, 
+			parseInt(st[0]),
+			parseInt(st[1]) - 1,
 			parseInt(st[2])
 		);
 	}
 	function get_date_string(date, plusDays) {
 		const n = new Date(date);
 		n.setDate(date.getDate() + plusDays)
-		
-    	return `${n.getFullYear()}/${n.getMonth()+1}/${n.getDate()}`
+
+		return `${n.getFullYear()}/${n.getMonth() + 1}/${n.getDate()}`
 	}
 </script>
 
 <div class="jumbotron text-center page-header">
-  <h1>Feed the beast</h1>
+	<h1>Feed the beast</h1>
 </div>
 <div class="row">
 	<div class="col-sm-4">
 		<img id="silas" class="img-responsive img-rounded">
-		<br/>
+		<br />
 		{{#if today}}
 			{{#if feedings}}
 				<div class="panel panel-default">
@@ -38,7 +38,7 @@
 						<option value="{{this.id}}">{{this.name}}</option>
 					{{/each}}
 				</select>
-				<button type="submit" class="btn btn-default">Add Entry</button>
+				<button type="submit" class="btn btn-default">Add Entry Now</button>
 			</div>
 		</form>
 	</div>
@@ -54,7 +54,7 @@
 		</h2>
 		{{#if feedings}}
 			<script>
-				let add_zero = function(s) {
+				let add_zero = function (s) {
 					if (typeof s !== typeof "") {
 						s = s.toString();
 					}
@@ -63,7 +63,7 @@
 					}
 					return s;
 				};
-				
+
 				let st = "{{feedings.0.time}}".split(':');
 				let lastFeeding = new Date(Date.now());
 				lastFeeding.setHours(st[0]);
@@ -71,52 +71,17 @@
 				lastFeeding.setSeconds(st[2]);
 
 				let time_left = document.getElementById("since");
-				
+
 				function perSecond() {
 					let diff = Date.now() - lastFeeding;
-					time_left.innerHTML = 
-						add_zero(Math.floor(diff/1000/60/60)) + ":" + // to hours
-						add_zero(Math.floor(diff/1000/60%60)) + ":" + // to minutes
-						add_zero(Math.floor(diff/1000%60));           // to seconds*/
+					time_left.innerHTML =
+						add_zero(Math.floor(diff / 1000 / 60 / 60)) + ":" + // to hours
+						add_zero(Math.floor(diff / 1000 / 60 % 60)) + ":" + // to minutes
+						add_zero(Math.floor(diff / 1000 % 60));           // to seconds*/
 				}
 				perSecond();
 				window.setInterval(perSecond, 1000);
 			</script>
-			<span class="border border-dark">
-				<table class="table table-hover">
-					<thead class="thead-dark">
-						<th style="width:30%">when</th>
-						<th style="width:60%">who</th>
-						<th style="width:10%"></th>
-					</thead>
-					<tbody>
-						{{#each feedings}}
-							<tr {{#unless (even @index)}} 
-									class="odd"
-								{{/unless}}>
-								<td>{{this.time}}</td>
-								<td>
-									{{#if this.anon}}
-										<i>anonymous</i>
-									{{else}}
-										{{this.who}}
-									{{/if}}
-								</td>
-								<td>
-									<a 
-										id="previous-date" 
-										href="/delete/{{this.feed_id}}"
-										role="button"
-										class="btn btn-primary"
-									>
-										Delete
-									</a>
-								</td>
-							</tr>
-						{{/each}}
-					</tbody>
-				</table>
-			</span>
 		{{else}}
 			<i>
 				{{#if today}}
@@ -126,14 +91,55 @@
 				{{/if}}
 			</i>
 		{{/if}}
-		<br>
+		<form action="/add/{{date}}" method="post" form="add_form">
+		<table class="table table-hover">
+			<thead class="thead-dark">
+				<th style="width:30%">when</th>
+				<th style="width:60%">who</th>
+				<th style="width:10%"></th>
+			</thead>
+			<tbody>
+				{{#each feedings}}
+					<tr {{#unless (even @index)}} class="odd" {{/unless}}>
+						<td>{{this.time}}</td>
+						<td>
+							{{#if this.anon}}
+								<i>anonymous</i>
+							{{else}}
+								{{this.who}}
+							{{/if}}
+						</td>
+						<td>
+							<a id="previous-date" href="/delete/{{this.feed_id}}" role="button" class="btn btn-primary" style="width:100%;">
+								Delete
+							</a>
+						</td>
+					</tr>
+				{{/each}}
+				<tr>
+					<td>
+						<input type="time" class="form-control" name="time">
+					</td>
+					<td>
+						<select name="user" class="form-control">
+							{{#each users}}
+								<option value="{{this.id}}">{{this.name}}</option>
+							{{/each}}
+						</select>
+					</td>
+					<td>
+						<input type="submit" class="btn btn-default" style="width:100%;" value="Add"></input>
+					</td>
+				</tr>
+			</tbody>
+		</table></form>
 	</div>
 </div>
 <script>
-    var n = Math.floor(Math.random() * 6) + 1;
+	var n = Math.floor(Math.random() * 6) + 1;
 
-    var elem = document.getElementById("silas");
-    elem.src = "/img/silas_pics/" + n.toString() + ".jpg";
+	var elem = document.getElementById("silas");
+	elem.src = "/img/silas_pics/" + n.toString() + ".jpg";
 
 	console.log(get_date_string(construct_date("{{date}}"), 1))
 	document.getElementById("previous-date").href = "/" + get_date_string(today, -1);
