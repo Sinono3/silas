@@ -15,6 +15,17 @@ app.use(express.static('public'))
 app.use(express.urlencoded());
 app.use(express.json());
 
+function get_date_string(date: Date) {
+    return `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}`
+}
+function construct_date(year: string, month: string, day: string) {
+    return new Date(
+        parseInt(year), 
+        parseInt(month)-1, 
+        parseInt(date)
+    );
+}
+
 async function open_db() {
     return await open({
         filename: 'database.db',
@@ -22,9 +33,12 @@ async function open_db() {
     });
 }
 
-async function get_feedings_for_today(db: Database) {
+async function get_feedings_for_date(db: Database, date: Date) {
     let users = await db.all("SELECT id, name FROM users");
-    let feedings = await db.all("SELECT * FROM feedings WHERE date(datetime(time / 1000, 'unixepoch')) = date(datetime('now', 'localtime'))");
+    let feedings = await db.all(
+        "SELECT * FROM feedings WHERE date(datetime(time / 1000, 'unixepoch', 'localtime')) = date(datetime(? / 1000, 'unixepoch', 'localtime'))",
+        date.getTime()
+    );
 
     feedings.sort((a, b) => a.time - b.time);
     feedings.reverse();
@@ -53,17 +67,31 @@ async function remove_entry(db: Database, id: number) {
     console.log("Deleted entry ", id);
     await db.run("DELETE FROM feedings WHERE id = ?", id);
 }
-
-app.get('/', async function (req, res) {
+async function get_ctx_from_date(date: Date) {
     const db = await open_db();
-    let feedings = await get_feedings_for_today(db);
+    let feedings = await get_feedings_for_date(db, date);
     let users = await get_users(db);
     
-    res.render('main', {
+    const date_str = get_date_string(date);
+    return {
         feedings: feedings,
         users: users,
-        date: new Date(Date.now()).toLocaleDateString()
-    });
+        date: date_str,
+        today: date_str == get_date_string(new Date(Date.now()))
+    };
+}
+app.get('/:year/:month/:date', async function (req, res) {
+    const date = construct_date(req.params.year, req.params.month, req.params.day);
+
+    if (get_date_string(date) == get_date_string(new Date(Date.now()))) {
+        res.redirect("/");
+        return;
+    }
+
+    res.render('main', await get_ctx_from_date(date));
+});
+app.get('/', async function (req, res) {
+    res.render('main', await get_ctx_from_date(new Date(Date.now())));
 });
 
 app.post('/feed', async function (req, res) {
