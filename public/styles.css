@@ -1,44 +1,13 @@
 @import url('https://fonts.googleapis.com/css2?family=Merriweather&display=swap');
 
 body {
-    /* background-color: #4b4b4b;*/
     background-image: url("img/fur.jpg");
     font-family: 'Merriweather', sans-serif;
 }
-
-small {
-    text-align: center;
+#silas {
+    width: 100%;
 }
-
-img {
-    width: 50%;
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-}
-
 #main {
     background-color: #d1d1d1;
-
-    position:absolute;
-    left:0; right:0;
-    top:0; bottom:0;
-    margin:auto;
-
-    max-width:620px;
-    max-height:800px;
-
-    text-align: center;
-    overflow-y: scroll;
-    overflow-x: hidden;
-}
-table {
-    width: 100%;
-    padding: 20px;
-}
-.col {
-    font-weight: bold;
-}
-.odd {
-    background-color: #b1b1b1;
+    padding: 4vw;
 }

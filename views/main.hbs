@@ -1,84 +1,92 @@
-<h1>Feed the beast</h1>
+<div class="jumbotron text-center page-header">
+  <h1>Feed the beast</h1>
+</div>
+<div class="row">
+	<div class="col-sm-4">
+		<img id="silas" class="img-responsive img-rounded">
+		<br/>
+		{{#if feedings}}
+			<div class="panel panel-default">
+				<div class="panel-heading">Since last feeding:</div>
+				<div class="panel-body" id="since">Panel Content</div>
+			</div>
+		{{/if}}
+		<form action="/feed" method="post" class="form-inline">
+			<div class="form-group">
+				<select name="user" class="form-control">
+					{{#each users}}
+						<option value="{{this.id}}">{{this.name}}</option>
+					{{/each}}
+				</select>
+				<button type="submit" class="btn btn-default">Add Entry</button>
+			</div>
+		</form>
+	</div>
+	<div class="col-sm-8">
+		{{#if feedings}}
+			<script>
+				let add_zero = function(s) {
+					if (typeof s !== typeof "") {
+						s = s.toString();
+					}
+					if (s.length < 2) {
+						s = "0" + s;
+					}
+					return s;
+				};
 
-<img id="silas">
+				let st = "{{feedings.0.time}}".split(':');
+				let lastFeeding = new Date(Date.now());
+				lastFeeding.setHours(st[0]);
+				lastFeeding.setMinutes(st[1]);
+				lastFeeding.setSeconds(st[2]);
+
+				let time_left = document.getElementById("since");
+				
+				function perSecond() {
+					let diff = Date.now() - lastFeeding;
+					time_left.innerHTML = 
+						add_zero(Math.floor(diff/1000/60/60)) + ":" + // to hours
+						add_zero(Math.floor(diff/1000/60%60)) + ":" + // to minutes
+						add_zero(Math.floor(diff/1000%60));           // to seconds*/
+				}
+				perSecond();
+				window.setInterval(perSecond, 1000);
+			</script>
+			<h2>Today's feedings ({{date}}):</h2>
+			<span class="border border-dark">
+				<table class="table table-hover">
+					<thead class="thead-dark">
+						<th style="width:30%">when</th>
+						<th style="width:70%">who</th>
+					</thead>
+					<tbody>
+						{{#each feedings}}
+							<tr {{#unless (even @index)}} 
+									class="odd"
+								{{/unless}}>
+								<td>{{this.time}}</td>
+								<td>
+									{{#if this.anon}}
+										<i>anonymous</i>
+									{{else}}
+										{{this.who}}
+									{{/if}}
+								</td>
+							</tr>
+						{{/each}}
+					</tbody>
+				</table>
+			</span>
+		{{else}}
+			<i>It seems that the beast has not been fed today... yet.</i>
+		{{/if}}
+		<br>
+	</div>
+</div>
 <script>
     var n = Math.floor(Math.random() * 6) + 1;
 
     var elem = document.getElementById("silas");
     elem.src = "img/silas_pics/" + n.toString() + ".jpg";
 </script>
-
-<br> 
-<form action="/feed" method="post" form="form2">
-    <select name="user">
-        {{#each users}}
-            <option value="{{this.id}}">{{this.name}}</option>
-        {{/each}}
-    </select>
-    <input type="submit" value="Add Entry">
-</form>
-
-<br>
-{{#if feedings}}
-    <h1 id="since">Since last feeding:<br>xd</h1>
-    <script>
-        let add_zero = function(s) {
-            if (typeof s !== typeof "") {
-                s = s.toString();
-            }
-            if (s.length < 2) {
-                s = "0" + s;
-            }
-            return s;
-        };
-
-        let st = "{{feedings.0.time}}".split(':');
-        let lastFeeding = new Date(Date.now());
-        lastFeeding.setHours(st[0]);
-        lastFeeding.setMinutes(st[1]);
-        lastFeeding.setSeconds(st[2]);
-
-        let time_left = document.getElementById("since");
-        
-        function perSecond() {
-            let diff = Date.now() - lastFeeding;
-            time_left.innerHTML = "Since last feeding:<br>" +
-                add_zero(Math.floor(diff/1000/60/60)) + ":" + // to hours
-                add_zero(Math.floor(diff/1000/60%60)) + ":" + // to minutes
-                add_zero(Math.floor(diff/1000%60));           // to seconds*/
-        }
-        perSecond();
-        window.setInterval(perSecond, 1000);
-    </script>
-
-
-    <h3>{{date}}</h3>
-    <h2>Today's feedings ({{feedings.length}}):</h2>
-    <table>
-        <colgroup>
-            <col style="width:30%">
-            <col style="width:70%">
-        </colgroup>
-        <tr>
-            <td class="col odd">when</td>
-            <td class="col odd">who</td>
-        </tr>
-        {{#each feedings}}
-            <tr {{#unless (even @index)}} 
-                    class="odd"
-                {{/unless}}>
-                <td>{{this.time}}</td>
-                   <td>
-                    {{#if this.anon}}
-                        <i>anonymous</i>
-                    {{else}}
-                        {{this.who}}
-                    {{/if}}
-                </td>
-            </tr>
-        {{/each}}
-    </table>
-{{else}}
-    <i>It seems that the beast has not been feeded today... yet.</i>
-{{/if}}
-<br>
