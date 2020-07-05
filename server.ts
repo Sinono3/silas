@@ -49,9 +49,9 @@ async function add_feeding_entry(db: Database, user: number) {
     console.log("Added entry by user " + user + ".");
     db.run('INSERT INTO feedings (who, time) VALUES (?, ?)', user, Date.now())
 }
-async function clear_todays_entries(db: Database) {
-    console.log("Deleted today's entries.");
-    await db.run("DELETE FROM feedings WHERE date(datetime(time / 1000, 'unixepoch')) = date('now')");
+async function remove_entry(db: Database, id: number) {
+    console.log("Deleted entry ", id);
+    await db.run("DELETE FROM feedings WHERE id = ?", id);
 }
 
 app.get('/', async function (req, res) {
@@ -71,12 +71,6 @@ app.post('/feed', async function (req, res) {
 
     await add_feeding_entry(await open_db(), parseInt(req.body.user));
 
-    res.redirect("/");
-});
-
-
-app.get('/clear_day_feedings', async function (req, res) {
-    await clear_todays_entries(await open_db());
     res.redirect("/");
 });
 
