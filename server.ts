@@ -55,17 +55,18 @@ async function get_feedings_for_date(db: Database, date: Date) {
 
     return feedings;
 }
+
 async function get_users(db: Database) {
     return await db.all("SELECT id, name FROM users");
 }
 // user ID as input
 async function add_feeding_entry(db: Database, user: number) {
-    console.log("Added entry by user " + user + ".");
+    console.log("Added entry by user" + user + ".");
     db.run('INSERT INTO feedings (who, time) VALUES (?, ?)', user, Date.now())
 }
 async function remove_entry(db: Database, id: number) {
-    console.log("Deleted entry ", id);
-    await db.run("DELETE FROM feedings WHERE id = ?", id);
+    console.log("Deleted entry", id);
+    await db.run("DELETE FROM feedings WHERE feed_id = ?", id);
 }
 async function get_ctx_from_date(date: Date) {
     const db = await open_db();
@@ -92,6 +93,12 @@ app.get('/:year/:month/:date', async function (req, res) {
 });
 app.get('/', async function (req, res) {
     res.render('main', await get_ctx_from_date(new Date(Date.now())));
+});
+
+app.get('/delete/:id', async function (req, res) {
+    remove_entry(await open_db(), parseInt(req.params.id));
+
+    res.redirect("/");
 });
 
 app.post('/feed', async function (req, res) {

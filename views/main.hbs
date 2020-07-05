@@ -44,13 +44,13 @@
 	</div>
 	<div class="col-sm-8">
 		<h2>
-			<a type="button" class="btn btn-secondary date-btn" id="previous-date">⮜</a>
+			<a role="button" class="btn btn-secondary date-btn" id="previous-date">⮜</a>
 			{{#if today}}
 				Today's feedings ({{date}}):
 			{{else}}
 				Feedings of {{date}}:
 			{{/if}}
-			<a type="button" class="btn btn-secondary date-btn" id="next-date">⮞</a>
+			<a role="button" class="btn btn-secondary date-btn" id="next-date">⮞</a>
 		</h2>
 		{{#if feedings}}
 			<script>
@@ -86,7 +86,8 @@
 				<table class="table table-hover">
 					<thead class="thead-dark">
 						<th style="width:30%">when</th>
-						<th style="width:70%">who</th>
+						<th style="width:60%">who</th>
+						<th style="width:10%"></th>
 					</thead>
 					<tbody>
 						{{#each feedings}}
@@ -100,6 +101,16 @@
 									{{else}}
 										{{this.who}}
 									{{/if}}
+								</td>
+								<td>
+									<a 
+										id="previous-date" 
+										href="/delete/{{this.feed_id}}"
+										role="button"
+										class="btn btn-primary"
+									>
+										Delete
+									</a>
 								</td>
 							</tr>
 						{{/each}}
