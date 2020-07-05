@@ -18,12 +18,10 @@ app.use(express.json());
 function get_date_string(date: Date) {
     return `${date.getFullYear()}/${date.getMonth()+1}/${date.getDate()}`
 }
-function construct_date(year: string, month: string, day: string) {
 function construct_date(year: string, month: string, date: string) {
     return new Date(
         parseInt(year), 
         parseInt(month)-1, 
-        parseInt(day)
         parseInt(date)
     );
 }
@@ -83,7 +81,6 @@ async function get_ctx_from_date(date: Date) {
     };
 }
 app.get('/:year/:month/:date', async function (req, res) {
-    const date = construct_date(req.params.year, req.params.month, req.params.day);
     const date = construct_date(req.params.year, req.params.month, req.params.date);
 
     if (get_date_string(date) == get_date_string(new Date(Date.now()))) {
