@@ -22,7 +22,7 @@ function construct_date(year: string, month: string, day: string) {
     return new Date(
         parseInt(year), 
         parseInt(month)-1, 
-        parseInt(date)
+        parseInt(day)
     );
 }
 
